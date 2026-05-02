@@ -5,7 +5,8 @@ import com.sun.net.httpserver.*;
 
 public class Server {
     public static void main(String[] args) throws Exception {
-        HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
+        int port = Integer.parseInt(System.getenv().getOrDefault("PORT", "8080"));
+        HttpServer server = HttpServer.create(new InetSocketAddress("0.0.0.0", port), 0);
         
         server.createContext("/", new HttpHandler() {
             public void handle(HttpExchange exchange) throws IOException {
@@ -74,6 +75,6 @@ public class Server {
         });
         
         server.start();
-        System.out.println("服务器已启动: http://localhost:8080");
+        System.out.println("服务器已启动，端口: " + port);
     }
 }
