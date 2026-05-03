@@ -1,6 +1,5 @@
-FROM openjdk:11
+FROM eclipse-temurin:17-jdk-alpine
 COPY . /app
 WORKDIR /app
-RUN curl -L -o jsoup.jar https://repo1.maven.org/maven2/org/jsoup/jsoup/1.17.2/jsoup-1.17.2.jar
-RUN javac -cp jsoup.jar App.java
-CMD ["java", "-cp", ".:jsoup.jar", "App"]
+RUN javac -cp jsoup-1.22.2.jar App.java
+CMD ["java", "-cp", ".:jsoup-1.22.2.jar", "App"]
