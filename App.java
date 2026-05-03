@@ -38,7 +38,7 @@ public class App {
                 news.addAll(fetchBBC());
                 
                 StringBuilder html = new StringBuilder();
-                html.append("<!DOCTYPE html><html><head><meta charset='UTF-8'><title>TechNews</title>");
+                html.append("<!DOCTYPE html><html><head><meta charset='UTF-8'><meta name='referrer' content='no-referrer'><title>TechNews</title>");
                 html.append("<style>");
                 html.append("*{margin:0;padding:0;box-sizing:border-box;}");
                 html.append("body{font-family:Arial;background:#f5f5f5;max-width:900px;margin:0 auto;padding:20px;}");
