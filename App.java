@@ -20,7 +20,6 @@ public class App {
         }
     }
     
-    static List<NewsItem> allNews = new ArrayList<>();
     static String[] comments = {
         "Tech news is interesting today, {keyword} has new progress!",
         "This news about {keyword} makes me feel the future is here.",
@@ -47,7 +46,6 @@ public class App {
                 html.append(".header h1{font-size:2em;color:#1565C0;}");
                 html.append(".comment-box{background:#E3F2FD;padding:15px;border-radius:8px;margin-bottom:20px;}");
                 html.append(".sound-link{margin-bottom:20px;}");
-                html.append(".sound-link a{color:#2196F3;text-decoration:none;}");
                 html.append(".news-card{background:#fff;border-radius:10px;display:flex;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.1);overflow:hidden;}");
                 html.append(".img-container{width:200px;min-width:200px;}");
                 html.append(".news-img{width:100%;height:150px;object-fit:cover;transition:transform 0.3s;cursor:pointer;}");
@@ -69,7 +67,7 @@ public class App {
                 for (NewsItem item : news) {
                     html.append("<div class='news-card'>");
                     if(item.imageUrl!=null && !item.imageUrl.isEmpty()) {
-                        html.append("<div class='img-container'><img src='").append(item.imageUrl).append("' class='news-img' onclick='this.classList.toggle(\"zoomed\")'></div>");
+                        html.append("<div class='img-container'><img src='").append(item.imageUrl).append("' class='news-img' onerror=\"this.onerror=null;this.src='https://placehold.co/400x300/e0e0e0/999?text=No+Image';\" onclick='this.classList.toggle(\"zoomed\")'></div>");
                     } else {
                         html.append("<div class='img-container' style='background:#e0e0e0;display:flex;align-items:center;justify-content:center;height:150px;'><span style='color:#999;'>No Image</span></div>");
                     }
@@ -125,22 +123,21 @@ public class App {
             if(u>=0) link=parts[i].substring(u+10).split("\"")[0];
             String img = "";
             int im = parts[i].indexOf("\"thumbnail\":\"");
-                if (im >= 0) {
-                    String thumb = parts[i].substring(im + 14).split("\"")[0];
-                if (thumb != null && !thumb.isEmpty()) img = thumb;
-        }
-
-                if (img.isEmpty() && !link.isEmpty()) {
-                    try {
-                        Thread.sleep(1500);
-                        Document article = Jsoup.connect(link)
-                            .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
-                             .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
-            .timeout(8000).get();
-        Element ogImg = article.select("meta[property='og:image']").first();
-        if (ogImg != null) img = ogImg.attr("content");
-    } catch (Exception e) { }
-}
+            if(im >= 0) {
+                String thumb = parts[i].substring(im+14).split("\"")[0];
+                if(thumb != null && !thumb.isEmpty()) img = thumb;
+            }
+            if(img.isEmpty() && !link.isEmpty()) {
+                try {
+                    Thread.sleep(1500);
+                    Document article = Jsoup.connect(link)
+                        .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+                        .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+                        .timeout(8000).get();
+                    Element ogImg = article.select("meta[property='og:image']").first();
+                    if(ogImg != null) img = ogImg.attr("content");
+                } catch (Exception e) { }
+            }
             String summary=""; int t=parts[i].indexOf("\"trailText\":\"");
             if(t>=0) summary=parts[i].substring(t+13).split("\"")[0];
             list.add(new NewsItem(title,summary,link,img,"The Guardian"));
@@ -152,10 +149,10 @@ public class App {
         List<NewsItem> list = new ArrayList<>();
         Thread.sleep(3000);
         Document doc = Jsoup.connect("http://rss.cnn.com/rss/edition_technology.rss")
-        .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36")
-        .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
-        .header("Accept-Language", "en-US,en;q=0.9")
-        .timeout(10000).ignoreContentType(true).get();
+            .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36")
+            .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
+            .header("Accept-Language", "en-US,en;q=0.9")
+            .timeout(10000).ignoreContentType(true).get();
         for(Element item : doc.select("item")) {
             String title = item.select("title").first().text();
             String link = item.select("link").first().text();
@@ -170,11 +167,11 @@ public class App {
     static List<NewsItem> fetchBBC() throws Exception {
         List<NewsItem> list = new ArrayList<>();
         Thread.sleep(3000);
-        Document article = Jsoup.connect(link)
-        .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
-        .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
-        .header("Accept-Language", "en-US,en;q=0.9")
-        .timeout(8000).get();
+        Document doc = Jsoup.connect("https://feeds.bbci.co.uk/news/technology/rss.xml")
+            .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+            .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+            .header("Accept-Language", "en-US,en;q=0.9")
+            .timeout(10000).ignoreContentType(true).get();
         for(Element item : doc.select("item")) {
             String title = item.select("title").first().text();
             String link = item.select("link").first().text();
