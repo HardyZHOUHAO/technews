@@ -64,7 +64,7 @@ public class App {
                 html.append("</style></head><body>");
                 html.append("<div class='header'><h1>TechNews</h1><p>Guardian · CNN · BBC</p></div>");
                 html.append("<div class='comment-box'><p>").append(generateComment(news)).append("</p></div>");
-                html.append("<div class='sound-link'><a href='#' onclick=\"new Audio('https://www.soundjay.com/buttons/sounds/button-09.mp3').play();return false;\">Sound</a></div>");
+                html.append("<div class='sound-link'><a href='#' onclick=\"new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3').play();return false;\">Sound</a></div>");
                 
                 for (NewsItem item : news) {
                     html.append("<div class='news-card'>");
@@ -123,8 +123,24 @@ public class App {
             String title = parts[i].split("\"")[0];
             String link=""; int u=parts[i].indexOf("\"webUrl\":\"");
             if(u>=0) link=parts[i].substring(u+10).split("\"")[0];
-            String img=""; int im=parts[i].indexOf("\"thumbnail\":\"");
-            if(im>=0) img=parts[i].substring(im+14).split("\"")[0];
+            String img = "";
+            int im = parts[i].indexOf("\"thumbnail\":\"");
+                if (im >= 0) {
+                    String thumb = parts[i].substring(im + 14).split("\"")[0];
+                if (thumb != null && !thumb.isEmpty()) img = thumb;
+        }
+
+                if (img.isEmpty() && !link.isEmpty()) {
+                    try {
+                        Thread.sleep(1500);
+                        Document article = Jsoup.connect(link)
+                            .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+                             .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+            .timeout(8000).get();
+        Element ogImg = article.select("meta[property='og:image']").first();
+        if (ogImg != null) img = ogImg.attr("content");
+    } catch (Exception e) { }
+}
             String summary=""; int t=parts[i].indexOf("\"trailText\":\"");
             if(t>=0) summary=parts[i].substring(t+13).split("\"")[0];
             list.add(new NewsItem(title,summary,link,img,"The Guardian"));
@@ -135,7 +151,11 @@ public class App {
     static List<NewsItem> fetchCNN() throws Exception {
         List<NewsItem> list = new ArrayList<>();
         Thread.sleep(3000);
-        Document doc = Jsoup.connect("http://rss.cnn.com/rss/edition_technology.rss").userAgent("Mozilla/5.0").timeout(10000).ignoreContentType(true).get();
+        Document doc = Jsoup.connect("http://rss.cnn.com/rss/edition_technology.rss")
+        .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36")
+        .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
+        .header("Accept-Language", "en-US,en;q=0.9")
+        .timeout(10000).ignoreContentType(true).get();
         for(Element item : doc.select("item")) {
             String title = item.select("title").first().text();
             String link = item.select("link").first().text();
@@ -150,7 +170,11 @@ public class App {
     static List<NewsItem> fetchBBC() throws Exception {
         List<NewsItem> list = new ArrayList<>();
         Thread.sleep(3000);
-        Document doc = Jsoup.connect("https://feeds.bbci.co.uk/news/technology/rss.xml").userAgent("Mozilla/5.0").timeout(10000).ignoreContentType(true).get();
+        Document article = Jsoup.connect(link)
+        .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+        .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+        .header("Accept-Language", "en-US,en;q=0.9")
+        .timeout(8000).get();
         for(Element item : doc.select("item")) {
             String title = item.select("title").first().text();
             String link = item.select("link").first().text();
