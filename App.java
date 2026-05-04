@@ -82,6 +82,10 @@ public class App {
                 
                 html.append("<div class='header'><h1>📰 TechNews 即时新闻</h1>");
                 html.append("<p>Guardian · CNN · BBC 实时爬取</p></div>");
+                // 音乐播放器
+html.append("<div style='text-align:center;margin-bottom:15px;'>");
+html.append("<button id='musicBtn' onclick='toggleMusic()' style='background:#4CAF50;color:white;border:none;padding:8px 20px;border-radius:20px;cursor:pointer;font-size:14px;'>🎵 播放音乐</button>");
+html.append("</div>");
                 
                 String comment = generateComment(news);
                 html.append("<div class='comment-box'><p>💬 ").append(comment).append("</p></div>");
@@ -116,7 +120,23 @@ public class App {
                 html.append("<div class='footer'><p>🔄 数据即时从 Guardian API · CNN RSS · BBC RSS 爬取</p></div>");
                 
                 html.append("<script>");
+                html.append("var audio = null;");
+html.append("function toggleMusic(){");
+html.append("if(!audio){");
+html.append("audio = new Audio('https://www.qtings.com/uploads/tracks/2124019576_786842529_1597766027.mp3');");
+html.append("audio.loop = true;");  // 循环播放，去掉这行就不循环
+html.append("audio.play();");
+html.append("document.getElementById('musicBtn').innerHTML = '⏸️ 暂停音乐';");
+html.append("} else if(audio.paused){");
+html.append("audio.play();");
+html.append("document.getElementById('musicBtn').innerHTML = '⏸️ 暂停音乐';");
+html.append("} else {");
+html.append("audio.pause();");
+html.append("document.getElementById('musicBtn').innerHTML = '🎵 播放音乐';");
+html.append("}");
+html.append("}");
                 html.append("async function checkDictionary(){");
+                
                 html.append("var word=document.getElementById('word').value.trim().toLowerCase();");
                 html.append("var resultDiv=document.getElementById('result');");
                 html.append("if(!word){resultDiv.innerHTML='<div class=\"result-card\">⚠️ 请输入单词</div>';return;}");
